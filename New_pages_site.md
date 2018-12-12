@@ -16,3 +16,111 @@ RQ2: What are the hot issues of the news articles in these two official websites
 To answer the two aforementioned research questions, we chose to harvest the news section of the website of The White House ( https://www.whitehouse.gov/news/ ) and the news section of the website of The State Council of China ( http://english.gov.cn/news/topnews/ ) because they are the most authoritative news outlets in each country. We target at the date, the title, the url, and the full-text of each news article.
 ### White House
 On a single webpage of the news section, all the data related to a certain piece of news were wrapped in a `<article>` html tag, with the title in a `<h2>` tag, the url in a `<a>` tag wrapped in the aforementioned `<h2>` tag, and the date in a `<p class = ‘meta_date’>` tag.
+
+![WhiteHouseTitles](https://raw.githubusercontent.com/pu1ssant/CityUCOM5507_2018A/master/WhiteHouseTitles.png)
+**Fig. 1. Snapshot of White House news list**
+
+Based on this understanding of the webpage structure, we first found all the `<article>` tags in which we subsequently found all related tags by using the “requests” and “beautifulsoup4” packages, and appended them to their respective lists. Before starting harvesting, four empty lists named “dates”, “titles”, “urls” and “texts” had been created to store the harvested data. Since the data we needed were store on multiple webpages, we wrote a for-loop to scrape all 487 pages automatically.
+
+Then we started to harvest full-texts by looping the items in the “urls” list. On the webpage of a specific news article, the full-text is wrapped in a `<div class = ‘page-content editor’>` tag. 
+
+![WhiteHouseFullText](https://raw.githubusercontent.com/pu1ssant/CityUCOM5507_2018A/master/WhiteHouseFullText.png)
+**Fig. 2. Snapshot of a White House news article**
+
+However, besides the full-text, there were also some regular unwanted texts within this tag: “share-this-page-on-facebook”, “share-this-page-on-twitter”, “copy-url-to-your-clipboard”, and “All News”. To solve this problem, we used the replace() method to remove the unwanted texts. After the simple processing, the raw full-text is appended to the “texts” list. Next, we created a dictionary from the four existing lists, and created a dataframe from the dictionary we had just created. Then we saved the dataframe into a CSV file which was the raw dataset of White House news. The dataset has 4860 pieces of news, spanning a period from 2017-01-24 to 2018-11-19.
+
+![WhiteHouseRaw](https://raw.githubusercontent.com/pu1ssant/CityUCOM5507_2018A/master/Screen%20Shot%202018-12-12%20at%2010.57.52.png)
+**Fig. 3. Snapshot of the raw dataset of White House news**
+
+### State Council
+The news section of State Council had only one webpage although there are page numbers to click on. When clicking on a certain page number, the url in the address bar will not change. For this reason, we did not need to use for-loop to harvest.
+
+![StateCouncilTitles](https://raw.githubusercontent.com/pu1ssant/CityUCOM5507_2018A/master/StateCouncilTitles.png)
+**Fig. 4. Snapshot of State Council news list**
+
+All the data related to a certain piece of news were wrapped in a `<div style = ‘display: block’>` or `<div style = ‘display: none’>`html tag, with the title and the url in a `<a>` tag, and the date in a `<span>` tag. Because of the webpage structure, we first harvested all the `<div style = ‘display: block’>`tags by using the “requests” and “beautifulsoup4” packages  and then harvested all the `<div style = ‘display: none’>` tags. As we had done in harvesting White House news, all the scraped data were appended to empty lists named “dates”, “titles”, and “urls” respectively which had been created at an earlier time.
+
+After getting all the urls, we started to harvest the full-texts by looping all the items in the “urls” list. On the webpage of a specific news article, the full-text is wrapped in a `<content>` tag. 
+
+![StateCouncilFullText](https://raw.githubusercontent.com/pu1ssant/CityUCOM5507_2018A/master/StateCouncilFullText.png)
+**Fig. 5. Snapshot of a State Council news article**
+
+When we were looping for the first time, we encountered a problem that some of the urls were invalid, which caused a breakdown to our program. To solve this, we added a try/except statement to skip those invalid urls. Each full-text was appended to the “texts” list. Next, a dictionary was created from the four existing lists, and  a dataframe was created from the dictionary which had been created. Then we saved the dataframe into a CSV file which was the raw dataset of State Council news. The dataset has 4792 titles, 4794 urls and 4790 full-texts, spanning a period from 2016-07-27 to 2018-11-20.
+
+
+![StateCouncilRaw](https://raw.githubusercontent.com/pu1ssant/CityUCOM5507_2018A/master/Screen%20Shot%202018-12-12%20at%2012.06.56.png)
+**Fig. 6. Snapshot of the raw dataset of State Council news**
+
+## Data cleaning
+Pandas, Numpy, TextBlob, and NLTK packages were used to clean the raw texts by removing the newline characters and tab characters, removing punctuations and numbers, changing uppercase to lowercase, lemmatizing words, and removing stopwords. Besides, the original dates were re-formatted by using the Pandas’ built-in methods “to_datetime” and “dt.date”. Two new dataframes were created to store the cleaned data and then were saved  into two new CSV files.
+
+![WhiteHouseCleaned](https://raw.githubusercontent.com/pu1ssant/CityUCOM5507_2018A/master/Screen%20Shot%202018-12-12%20at%2013.12.11.png)
+**Fig. 7. Snapshot of  the cleaned data of White House news**
+
+
+![WhiteHouseCleaned](https://raw.githubusercontent.com/pu1ssant/CityUCOM5507_2018A/master/Screen%20Shot%202018-12-12%20at%2013.15.38.png)
+**Fig. 8. Snapshot of  the cleaned data of State Council news**
+
+## Data exploration
+
+### Publishing frequency
+
+![WhiteHouseCounts](https://raw.githubusercontent.com/pu1ssant/CityUCOM5507_2018A/master/WhiteHouseCounts.png)
+**Fig. 9. White House news publishing frequency (daily & monthly)**
+
+![StateCouncilCounts](https://raw.githubusercontent.com/pu1ssant/CityUCOM5507_2018A/master/StateCouncilCounts.png)
+**Fig. 10. State Council news publishing frequency (daily & monthly)**
+
+### Term frequency in titles
+
+**Table 1. White House & State Council top-10 most frequent terms in news titles**
+![table1](https://raw.githubusercontent.com/pu1ssant/CityUCOM5507_2018A/master/table1.png)
+
+![top20whitehouse](https://raw.githubusercontent.com/pu1ssant/CityUCOM5507_2018A/master/top20whitehouse.png)
+**Fig. 11. White House top-20 most frequent terms in news titles**
+
+![top20whitehouse](https://raw.githubusercontent.com/pu1ssant/CityUCOM5507_2018A/master/top20statecouncil.png)
+**Fig. 12. State Council top-20 most frequent terms in news titles**
+
+![whitehousetop100](https://raw.githubusercontent.com/pu1ssant/CityUCOM5507_2018A/master/whitehousetop100.png)
+**Fig. 13. Word cloud of White House top-100 most frequent terms in news titles**
+
+![statecounciltop100](https://raw.githubusercontent.com/pu1ssant/CityUCOM5507_2018A/master/statecounciltop100.png)
+**Fig. 14. Word cloud of State Council top-100 most frequent terms in news titles**
+
+### Topic Model
+
+**Table 2. The six topics and top-10 associated terms within each topic of White House news (topic modeling with LSA)**
+![table2](https://raw.githubusercontent.com/pu1ssant/CityUCOM5507_2018A/master/table2.png)
+
+**Table 3. The six topics and top-10 associated terms within each topic of State Council news (topic modeling with LSA)**
+![table3](https://raw.githubusercontent.com/pu1ssant/CityUCOM5507_2018A/master/table3.png)
+
+**Table 4. The six topics and top-10 associated terms within each topic of White House news
+(topic modeling with LDA using bag of words)**
+![table4](https://raw.githubusercontent.com/pu1ssant/CityUCOM5507_2018A/master/table4.png)
+
+**Table 5. The six topics and top-10 associated terms within each topic of State Council news
+(topic modeling with LDA using bag of words)**
+![table5](https://raw.githubusercontent.com/pu1ssant/CityUCOM5507_2018A/master/table5.png)
+
+**Table 6. The six topics and top-10 associated terms within each topic of White House news
+(topic modeling with LDA using tf-idf)**
+![table6](https://raw.githubusercontent.com/pu1ssant/CityUCOM5507_2018A/master/table6.png)
+
+**Table 7. The six topics and top-10 associated terms within each topic of State Council news
+(topic modeling with LDA using tf-idf)**
+![table7](https://raw.githubusercontent.com/pu1ssant/CityUCOM5507_2018A/master/table7.png)
+
+## References
+Ooi, S., & D’Arcangelis, G. (2017). Framing China: Discourses of othering in US news and political rhetoric. Global Media And China, 2(3-4), 269-283. doi: 10.1177/2059436418756096
+
+Yang, Y. (2011). A Comparative Analysis of the New York Times and China Daily's 2011 News Coverage of the Chinese Government (Postgraduate). Uppsala University.
+
+Joshi, P., & Analytics Vidhya. (2018, December 04). A Simple Introduction to Topic Modeling in Python. Retrieved from https://www.analyticsvidhya.com/blog/2018/10/stepwise-guide-topic-modeling-latent-semantic-analysis/
+
+Li, S. (2018, May 31). Topic Modeling and Latent Dirichlet Allocation (LDA) in Python. Retrieved from https://towardsdatascience.com/topic-modeling-and-latent-dirichlet-allocation-in-python-9bf156893c24
+
+Ryan, C. (n.d.). Topic Modelling with LSA and LDA. Retrieved from https://www.kaggle.com/rcushen/topic-modelling-with-lsa-and-lda
+
+邵梓捷, 张小劲, & 孟天广. (2015). 政治传播视角下《新闻联播》的宣传模式分析. 清华大学学报：哲学社会科学版, (03), 30-42.
